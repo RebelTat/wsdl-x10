@@ -31,7 +31,6 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Security.Policy;
 using System.Threading;
-using UsbLibrary;
 using System.Diagnostics;
 using WsdlClientInterface;
 
@@ -115,6 +114,7 @@ namespace JimsX10
             last_run = DateTime.Now; // this is used to time the compressor off time to prevent rapid start
             wind = 0;
             mWxDisplayUnits.Temperature = TemperatureUnit.degF;
+            mWxDisplayUnits.Wind = SpeedUnit.mi_per_hr;
         }
 
         private void CoolingDesiredMax_changed(object sender, EventArgs e)
@@ -133,16 +133,6 @@ namespace JimsX10
 
         public void TStat_Load(object sender, EventArgs e)
         {
-            this.usb.ProductId = 1; // X10 product ID
-            this.usb.VendorId = 3015; // X10 vendor ID
-            this.usb.Shared = true; // allow shared USB
-            this.usb.OnSpecifiedDeviceArrived += new System.EventHandler(this.usb_OnSpecifiedDeviceArrived);
-            this.usb.OnDataSend += new System.EventHandler(this.usb_OnDataSend);
-            this.usb.OnSpecifiedDeviceRemoved += new System.EventHandler(this.usb_OnSpecifiedDeviceRemoved);
-            this.usb.OnDeviceArrived += new System.EventHandler(this.usb_OnDeviceArrived);
-            this.usb.OnDeviceRemoved += new System.EventHandler(this.usb_OnDeviceRemoved);
-            this.usb.OnDataRecieved += new UsbLibrary.DataRecievedEventHandler(this.usb_OnDataRecieved);
-            this.usb.OnSpecifiedDeviceArrived += new System.EventHandler(this.usb_OnSpecifiedDeviceArrived);
 
 
             // create the controls for each of the defined temperature/humidity sensors
@@ -227,6 +217,11 @@ namespace JimsX10
             BarnSensor.SelectedIndex = BarnSensorNum;
             FreshAdd.Text = Properties.Settings.Default.TStatFreshAdd;
             MaxInDP.Value = Properties.Settings.Default.TStatMaxDP;
+            for(int i = 0;i<11 ; i++)
+            {
+                bool chk = Convert.ToBoolean( Properties.Settings.Default.CheckBoxes[i]);
+                sensorName[i].Checked = chk ;
+            }
         }
 
         private void SaveSet_Click(object sender, EventArgs e)
@@ -252,18 +247,24 @@ namespace JimsX10
             Properties.Settings.Default.TStatBarnSensor = BarnSensorNum;
             Properties.Settings.Default.TStatFreshAdd = FreshAdd.Text;
             Properties.Settings.Default.TStatMaxDP = MaxInDP.Value;
+            for (int i = 0; i < 10; i++)
+            {
+                Properties.Settings.Default.CheckBoxes[i] = Convert.ToString(sensorName[i].Checked);
+            }
             Properties.Settings.Default.Save();
         }
         void TStat_TextChanged(object sender, EventArgs e)
         {
-            UpdateStatus();
-            this.Refresh();
+            //UpdateStatus();
+            //this.Refresh();
         }
 
         private void HideButton_Click(object sender, EventArgs e)
         {
             //this.Visible = false;  // hide this control
             this.Close();
+            mClient.Disconnect();
+            this.Dispose();
         }
 
         public void UpdateStatus()
@@ -275,20 +276,28 @@ namespace JimsX10
             bool ok = false;
             string u = WxTemperatureUnit.ToString(mWxDisplayUnits.Temperature);
 
+            int areok = 0;
+            int cnt = 0;
             for (int i = 0; i < Properties.Settings.Default.TempSensorCount; i++)
             {
+ 
                 if (sensorName[i].Checked)
                 {
+                    ++cnt;
                     if (UseAppTemp.Checked) // if this is checked, control to apparent temp not actual
                         temp = WxTemperatureUnit.Convert(sensorATnum[i], mWxDataUnits.Temperature, mWxDisplayUnits.Temperature);
                     else
                         temp = WxTemperatureUnit.Convert(sensorTempNum[i], mWxDataUnits.Temperature, mWxDisplayUnits.Temperature);
                     if (temp > max) max = temp;
                     if (temp < min) min = temp;
-                    if (sensorRHNum[i] < 1) return; // if it fails rationality check, abort.  This ensures we read the sensors first
-                    ok = true; // make sure at least 1 is checked
+                    if (sensorRHNum[i] > 0) ++areok;
                 }
+
+ 
             }
+
+            if (cnt == areok) ok = true;
+            else ok = false;
 
             // make sure the current check mark matches the actual state
             CoolCompressor.Checked = X10check(CoolCompressor.Checked, CoolAddress.Text);
@@ -311,7 +320,7 @@ namespace JimsX10
             
             // now update the outputs
             // Note:  The reason these are all if..else if... is for hysteresis to prevent excessive toggling
-            if (max > MaxDes)  // if it's too hot, cool it off
+            if (max > MaxDes && ok)  // if it's too hot, cool it off
             {               
                 if((DateTime.Now - last_run).TotalSeconds > 30.0) // make sure we don't cycle the compressor too fast.
                     CoolCompressor.Checked = true;
@@ -324,7 +333,7 @@ namespace JimsX10
                  last_run = DateTime.Now; // reset compressor off timer
             }
 
-            if (min < MinDes && !CoolCompressor.Checked) // if it's too cold, and the a/c is not ON, heat it up
+            if (min < MinDes && !CoolCompressor.Checked && ok) // if it's too cold, and the a/c is not ON, heat it up
                  Heat.Checked = true;
             else if(min-1 > MinDes)
                  Heat.Checked = false;
@@ -335,7 +344,7 @@ namespace JimsX10
             else
                 diff = 0; 
             
-            if (diff > Convert.ToDouble(MaxSplit.Value))
+            if (diff > Convert.ToDouble(MaxSplit.Value) && ok)
                  MixFan.Checked = true;
             else if(diff+1.0 < Convert.ToDouble(MaxSplit.Value))
                  MixFan.Checked = false; 
@@ -343,12 +352,17 @@ namespace JimsX10
 
             
             // reset the max desired humdity based on outdoor temp
-            DesHumidity.Maximum = Convert.ToDecimal(MaxDesHum());
+            //DesHumidity.Maximum = Convert.ToDecimal(MaxDesHum());
+            if (DesHumidity.Value > Convert.ToDecimal(MaxDesHum()))
+                DesHumudityLabel.BackColor = Color.Red;
+            else
+                DesHumudityLabel.BackColor = Color.LightGreen;
+
             
             //check to see if we should enable the humidifier
-            if (AveIndoorHum() < Convert.ToDouble(DesHumidity.Value))
+            if (AveIndoorHum() < Convert.ToDouble(DesHumidity.Value) && ok)
                 HumidifierCheck.Checked = true;
-            else if (AveIndoorHum()+1.0 > Convert.ToDouble(DesHumidity.Value))
+            else if (AveIndoorHum()+1.0 > Convert.ToDouble(DesHumidity.Value) && ok)
                 HumidifierCheck.Checked = false;
 
             // should we bring in fresh air?  Always use apparent temp for this
@@ -356,7 +370,7 @@ namespace JimsX10
             double outside = WxTemperatureUnit.Convert(sensorTempNum[1], mWxDataUnits.Temperature, mWxDisplayUnits.Temperature);
             double OutDP = WxTemperatureUnit.Convert(sensorDPNum[1], mWxDataUnits.Temperature, mWxDisplayUnits.Temperature);
             double DesMaxDP = Convert.ToDouble(MaxInDP.Value);
-            if (((max >= MaxDes - 1 && outside < max)||(min <= MinDes + 1 && outside > min)) && OutDP < DesMaxDP) 
+            if (((max >= MaxDes - 1 && outside < max)||(min <= MinDes + 1 && outside > min)) && OutDP < DesMaxDP && ok) 
                 FreshAirFan.Checked = true;
             else
                 FreshAirFan.Checked = false;
@@ -781,76 +795,9 @@ namespace JimsX10
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            errorcount = ERRORMAX*2;
-            this.Close();
-        }
-
-
-        private void usb_OnDataSend(object sender, EventArgs e) { }
-
-        private void usb_OnSpecifiedDeviceRemoved(object sender, EventArgs e) 
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(usb_OnSpecifiedDeviceRemoved), new object[] { sender, e });
-            }
-            else
-            {
-               // LogMessage("Weather station removed from USB");
-            }
-
-        }
-
-        private void usb_OnDeviceArrived(object sender, EventArgs e)
-        {
-            //LogMessage("New USB device detected");
-        }
-
-        private void usb_OnDeviceRemoved(object sender, EventArgs e)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new EventHandler(usb_OnDeviceRemoved), new object[] { sender, e });
-            }
-            else
-            {
-               // LogMessage("USB device removed");
-            }
-        }
-
-        private void usb_OnSpecifiedDeviceArrived(object sender, EventArgs e)
-        {
-            //LogMessage("New device is a supported weather station!");
-        }
-
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            usb.RegisterHandle(Handle);
-        }
-
-
-
-        private void usb_OnDataRecieved(object sender, DataRecievedEventArgs args)
-        {
-            if (InvokeRequired)
-            {
-                try
-                {
-                    //Invoke(new DataRecievedEventHandler(usb_OnDataRecieved), new object[] { sender, args });
-                }
-                catch (Exception ex)
-                {
-                    //Console.WriteLine(ex.ToString());
-                }
-            }
-        }
-
         private bool X10ON(bool ON, string address)
         {
-            //ActiveHomeScriptLib.ActiveHomeClass act = new ActiveHomeScriptLib.ActiveHomeClass();
+            ActiveHomeScriptLib.ActiveHomeClass act = new ActiveHomeScriptLib.ActiveHomeClass();
             // access the X10 device to enable change
 
 
@@ -858,12 +805,16 @@ namespace JimsX10
             {
                 try
                 {
-                    Char[] temp = address.ToCharArray();
-                    Char house = temp[0];
-                    int device = Convert.ToInt32(address.Substring(1, address.Length -1));
-
-                    sendCom(house, device, ON);
-                    
+                    if (ON) // if it is already in the correct state leave it alone, else switch it.
+                    {
+                        if (!act.SendAction("queryplc", address + " on", null, null).Equals(1))
+                            act.SendAction("sendplc", address + " on", null, null);
+                    }
+                    else
+                    {
+                        if (act.SendAction("queryplc", address + " on", null, null).Equals(1))
+                            act.SendAction("sendplc", address + " off", null, null);
+                    }
                     errorcount = 0;
                     return true;
                 }
@@ -884,18 +835,19 @@ namespace JimsX10
         private bool X10check(bool state, string address)
         {
             // check the current state of an X10 device
-            //ActiveHomeScriptLib.ActiveHomeClass act = new ActiveHomeScriptLib.ActiveHomeClass();
+            
+            ActiveHomeScriptLib.ActiveHomeClass act = new ActiveHomeScriptLib.ActiveHomeClass();
             return true;
             if (X10Address(address))
             {
                 try
                 {
-                    //if (act.SendAction("queryplc", address + " on", null, null).Equals(1))
-                    //{
-                    //    errorcount = 0;
-                    //    return true;
-                    //}
-                    //else
+                    if (act.SendAction("queryplc", address + " on", null, null).Equals(1))
+                    {
+                        errorcount = 0;
+                        return true;
+                    }
+                    else
                     return state;
                 }
                 catch (Exception ex)
@@ -932,169 +884,7 @@ namespace JimsX10
             return true;
         }
 
-        private bool sendCom(Char house, int device, bool command)
-        {
-            byte[] com1 = new byte[2];
-            byte[] com2 = new byte[2];
-            // set the command bytes
-            com1[0] = 0x04;
-            com2[0] = 0x06;
-
-            // set command
-            if (command)
-                com2[1] = 0x02; // ON
-            else
-                com2[1] = 0x03; // not ON means OFF
-
-            // set house code
-            switch (house)
-            {
-                case 'A':
-                    com1[1] = 0x60;
-                    com2[1] += 0x60;
-                    break;
-                case 'B':
-                    com1[1] = 0xE0;
-                    com2[1] += 0xE0;
-                    break;
-                case 'C':
-                    com1[1] = 0x20;
-                    com2[1] += 0x20;
-                    break;
-                case 'D':
-                    com1[1] = 0xA0;
-                    com2[1] += 0xA0;
-                    break;
-                case 'E':
-                    com1[1] = 0x10;
-                    com2[1] += 0x10;
-                    break;
-                case 'F':
-                    com1[1] = 0x90;
-                    com2[1] += 0x90;
-                    break;
-                case 'G':
-                    com1[1] = 0x50;
-                    com2[1] += 0x50;
-                    break;
-                case 'H':
-                    com1[1] = 0xD0;
-                    com2[1] += 0xD0;
-                    break;
-                case 'I':
-                    com1[1] = 0x70;
-                    com2[1] += 0x70;
-                    break;
-                case 'J':
-                    com1[1] = 0xF0;
-                    com2[1] += 0xF0;
-                    break;
-                case 'K':
-                    com1[1] = 0x30;
-                    com2[1] += 0x30;
-                    break;
-                case 'L':
-                    com1[1] = 0xB0;
-                    com2[1] += 0xB0;
-                    break;
-                case 'M':
-                    com1[1] = 0x00;
-                    com2[1] += 0x00;
-                    break;
-                case 'N':
-                    com1[1] = 0x80;
-                    com2[1] += 0x80;
-                    break;
-                case 'O':
-                    com1[1] = 0x40;
-                    com2[1] += 0x40;
-                    break;
-                case 'P':
-                    com1[1] = 0xC0;
-                    com2[1] += 0xC0;
-                    break;
-                default:
-                    return false;
-            }
-
-            // set device code
-            switch (device)
-            {
-                case 1:
-                    com1[1] += 0x06;
-                    break;
-                case 2:
-                    com1[1] += 0x0E;
-                    break;
-                case 3:
-                    com1[1] += 0x02;
-                    break;
-                case 4:
-                    com1[1] += 0x0A;
-                    break;
-                case 5:
-                    com1[1] += 0x01;
-                    break;
-                case 6:
-                    com1[1] += 0x09;
-                    break;
-                case 7:
-                    com1[1] += 0x05;
-                    break;
-                case 8:
-                    com1[1] += 0x0D;
-                    break;
-                case 9:
-                    com1[1] += 0x07;
-                    break;
-                case 10:
-                    com1[1] += 0x0F;
-                    break;
-                case 11:
-                    com1[1] += 0x03;
-                    break;
-                case 12:
-                    com1[1] += 0x0B;
-                    break;
-                case 13:
-                    com1[1] += 0x00;
-                    break;
-                case 14:
-                    com1[1] += 0x08;
-                    break;
-                case 15:
-                    com1[1] += 0x04;
-                    break;
-                case 16:
-                    com1[1] += 0x0C;
-                    break;
-                default:
-                    return false;               
-            }
-
-            try
-            {
-                if (this.usb.SpecifiedDevice == null) return false; // return false if no USB device
-
-                this.usb.SpecifiedDevice.SendData(com1);
-                System.Threading.Thread.Sleep(750);
-                this.usb.SpecifiedDevice.SendData(com2);
-
-                System.Threading.Thread.Sleep(2000); // delay and send again to make sure
-
-                this.usb.SpecifiedDevice.SendData(com1);
-                System.Threading.Thread.Sleep(750);
-                this.usb.SpecifiedDevice.SendData(com2);
-
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
-        }
-
+ 
                 /// <summary>
         /// This function runs periodically (called by the timer tick event) and
         /// is responsible for analyzing temperature readings and turning fans 
@@ -1135,6 +925,7 @@ namespace JimsX10
                 //
                 // we only care about temperature/humidity data from the indoor and outdoor channels
                 //
+                double wnd = wind;
                 if (sd.RecordType == StationRecordType.TemperatureHumidity)
                 {
                     sensorTemp[sd.Sensor].Text = WxTemperatureUnit.DspString(
@@ -1146,20 +937,27 @@ namespace JimsX10
                     sensorTempNum[sd.Sensor] = sd.Record.Temperature;
                     sensorRHNum[sd.Sensor] = sd.Record.RH;
                     sensorDPNum[sd.Sensor] = sd.Record.DewPoint;
+                    if (sensorName[sd.Sensor].Checked) // no wind inside
+                        wnd = 0;
+                    else
+                        wnd = wind;
                     sensorATnum[sd.Sensor] = Moisture.AppTemp(WxTemperatureUnit.Convert(sd.Record.Temperature,
-                                mWxDataUnits.Temperature, TemperatureUnit.degC),sd.Record.RH, wind);
+                                mWxDataUnits.Temperature, TemperatureUnit.degC),sd.Record.RH, wnd);
                     sensorHInum[sd.Sensor] = Moisture.HeatIndex(WxTemperatureUnit.Convert(sd.Record.Temperature,
                                 mWxDataUnits.Temperature, TemperatureUnit.degF), sd.Record.RH,
                                 WxTemperatureUnit.Convert(sd.Record.DewPoint,
                                 mWxDataUnits.Temperature, TemperatureUnit.degF));
                     sensorWCnum[sd.Sensor] = Moisture.WindChill(WxTemperatureUnit.Convert(sd.Record.Temperature,
-                                mWxDataUnits.Temperature, TemperatureUnit.degF), WxSpeedUnit.Convert(wind, SpeedUnit.m_per_sec, SpeedUnit.mi_per_hr));
+                                mWxDataUnits.Temperature, TemperatureUnit.degF), WxSpeedUnit.Convert(wnd, SpeedUnit.m_per_sec, SpeedUnit.mi_per_hr));
                     continue;
                 }
 
                 if (sd.RecordType == StationRecordType.Wind)
                 {
                     wind = sd.Record.AverageSpeed;
+                    WindLabel.Text = "Wind: " + WxSpeedUnit.WindDspString(WxSpeedUnit.Convert(sd.Record.AverageSpeed,mWxDataUnits.Wind,mWxDisplayUnits.Wind)
+                        ,mWxDisplayUnits.Wind) + 
+                        WxSpeedUnit.ToString(mWxDisplayUnits.Wind);
                     continue;
                 }
 
@@ -1184,6 +982,14 @@ namespace JimsX10
             UpdateStatus(); // run the main loop and update the form
         }
 
+        private void DesHumidity_ValueChanged(object sender, EventArgs e)
+        {
+            if (DesHumidity.Value > Convert.ToDecimal(MaxDesHum()))
+                DesHumudityLabel.BackColor = Color.Red;
+            else
+                DesHumudityLabel.BackColor = Color.LightGreen;
+        }
 
+ 
     }
 }

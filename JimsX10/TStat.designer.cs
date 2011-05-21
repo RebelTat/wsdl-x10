@@ -43,6 +43,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.MaxSplit = new System.Windows.Forms.NumericUpDown();
             this.ActCondGroup = new System.Windows.Forms.GroupBox();
+            this.usbCheck = new System.Windows.Forms.CheckBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.AveHumLabel = new System.Windows.Forms.Label();
@@ -90,8 +91,7 @@
             this.UpdateLabel = new System.Windows.Forms.Label();
             this.helpProvider1 = new System.Windows.Forms.HelpProvider();
             this.label16 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.usb = new UsbLibrary.UsbHidPort(this.components);
+            this.WindLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.CoolingDesiredMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeatDesiredMin)).BeginInit();
             this.DesiredConditionsGp.SuspendLayout();
@@ -263,6 +263,7 @@
             0,
             0,
             0});
+            this.DesHumidity.ValueChanged += new System.EventHandler(this.DesHumidity_ValueChanged);
             // 
             // UseAppTemp
             // 
@@ -321,6 +322,8 @@
             // 
             // ActCondGroup
             // 
+            this.ActCondGroup.Controls.Add(this.WindLabel);
+            this.ActCondGroup.Controls.Add(this.usbCheck);
             this.ActCondGroup.Controls.Add(this.label15);
             this.ActCondGroup.Controls.Add(this.label14);
             this.ActCondGroup.Controls.Add(this.AveHumLabel);
@@ -335,6 +338,16 @@
             this.ActCondGroup.TabIndex = 6;
             this.ActCondGroup.TabStop = false;
             this.ActCondGroup.Text = "Actual Conditions";
+            // 
+            // usbCheck
+            // 
+            this.usbCheck.AutoSize = true;
+            this.usbCheck.Location = new System.Drawing.Point(502, 342);
+            this.usbCheck.Name = "usbCheck";
+            this.usbCheck.Size = new System.Drawing.Size(54, 17);
+            this.usbCheck.TabIndex = 13;
+            this.usbCheck.Text = "USB?";
+            this.usbCheck.UseVisualStyleBackColor = true;
             // 
             // label15
             // 
@@ -417,11 +430,11 @@
             // HideButton
             // 
             this.HideButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.HideButton.Location = new System.Drawing.Point(741, 2);
+            this.HideButton.Location = new System.Drawing.Point(824, 2);
             this.HideButton.Name = "HideButton";
             this.HideButton.Size = new System.Drawing.Size(40, 23);
             this.HideButton.TabIndex = 7;
-            this.HideButton.Text = "Hide";
+            this.HideButton.Text = "Exit";
             this.HideButton.UseVisualStyleBackColor = true;
             this.HideButton.Click += new System.EventHandler(this.HideButton_Click);
             // 
@@ -567,7 +580,7 @@
             // 
             // RefreshButton
             // 
-            this.RefreshButton.Location = new System.Drawing.Point(682, 2);
+            this.RefreshButton.Location = new System.Drawing.Point(764, 2);
             this.RefreshButton.Name = "RefreshButton";
             this.RefreshButton.Size = new System.Drawing.Size(54, 23);
             this.RefreshButton.TabIndex = 9;
@@ -657,7 +670,7 @@
             // 
             // SaveSet
             // 
-            this.SaveSet.Location = new System.Drawing.Point(483, 3);
+            this.SaveSet.Location = new System.Drawing.Point(565, 3);
             this.SaveSet.Name = "SaveSet";
             this.SaveSet.Size = new System.Drawing.Size(95, 21);
             this.SaveSet.TabIndex = 11;
@@ -667,7 +680,7 @@
             // 
             // Reload
             // 
-            this.Reload.Location = new System.Drawing.Point(584, 2);
+            this.Reload.Location = new System.Drawing.Point(666, 2);
             this.Reload.Name = "Reload";
             this.Reload.Size = new System.Drawing.Size(92, 22);
             this.Reload.TabIndex = 12;
@@ -846,21 +859,14 @@
             this.label16.TabIndex = 15;
             this.label16.Text = "Press F1 for help on the current selection";
             // 
-            // button1
+            // WindLabel
             // 
-            this.button1.Location = new System.Drawing.Point(787, 2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(59, 23);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "Kill";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // usb
-            // 
-            this.usb.ProductId = 1;
-            this.usb.Shared = true;
-            this.usb.VendorId = 3015;
+            this.WindLabel.AutoSize = true;
+            this.WindLabel.Location = new System.Drawing.Point(9, 333);
+            this.WindLabel.Name = "WindLabel";
+            this.WindLabel.Size = new System.Drawing.Size(32, 13);
+            this.WindLabel.TabIndex = 14;
+            this.WindLabel.Text = "Wind";
             // 
             // TStat
             // 
@@ -868,9 +874,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.CancelButton = this.HideButton;
             this.ClientSize = new System.Drawing.Size(872, 506);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.UpdateLabel);
             this.Controls.Add(this.BarnGroup);
@@ -972,7 +976,7 @@
         private System.Windows.Forms.Label UpdateLabel;
         private System.Windows.Forms.HelpProvider helpProvider1;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Button button1;
-        private UsbLibrary.UsbHidPort usb;
+        private System.Windows.Forms.CheckBox usbCheck;
+        private System.Windows.Forms.Label WindLabel;
     }
 }

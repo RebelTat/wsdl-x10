@@ -11,6 +11,7 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup>
-    <ReferencePath>C:\Users\Jim\Documents\Visual Studio 2010\Projects\JimsX10\</ReferencePath>
+    <ReferencePath>
+    </ReferencePath>
   </PropertyGroup>
 </Project>
