@@ -34,6 +34,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.HeatDesiredMin = new System.Windows.Forms.NumericUpDown();
             this.DesiredConditionsGp = new System.Windows.Forms.GroupBox();
+            this.AutoHumidity = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.MaxInDP = new System.Windows.Forms.NumericUpDown();
             this.DesHumudityLabel = new System.Windows.Forms.Label();
@@ -90,7 +91,6 @@
             this.UpdateLabel = new System.Windows.Forms.Label();
             this.helpProvider1 = new System.Windows.Forms.HelpProvider();
             this.label16 = new System.Windows.Forms.Label();
-            this.AutoHumidity = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.CoolingDesiredMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeatDesiredMin)).BeginInit();
             this.DesiredConditionsGp.SuspendLayout();
@@ -193,6 +193,16 @@
             this.DesiredConditionsGp.TabIndex = 5;
             this.DesiredConditionsGp.TabStop = false;
             this.DesiredConditionsGp.Text = "Desired HVAC Conditions";
+            // 
+            // AutoHumidity
+            // 
+            this.AutoHumidity.AutoSize = true;
+            this.AutoHumidity.Location = new System.Drawing.Point(165, 115);
+            this.AutoHumidity.Name = "AutoHumidity";
+            this.AutoHumidity.Size = new System.Drawing.Size(48, 17);
+            this.AutoHumidity.TabIndex = 14;
+            this.AutoHumidity.Text = "Auto";
+            this.AutoHumidity.UseVisualStyleBackColor = true;
             // 
             // label13
             // 
@@ -629,7 +639,6 @@
             this.RainThresh.Size = new System.Drawing.Size(36, 20);
             this.RainThresh.TabIndex = 3;
             this.RainThresh.Text = "0.15";
-            this.RainThresh.TextChanged += new System.EventHandler(this.RainThresh_TextChanged);
             // 
             // SprinklerAddressLabel
             // 
@@ -651,13 +660,10 @@
             this.SprinklerAddress.Size = new System.Drawing.Size(30, 20);
             this.SprinklerAddress.TabIndex = 1;
             this.SprinklerAddress.Text = "a1";
-            this.SprinklerAddress.TextChanged += new System.EventHandler(this.X10Address_TextChanged);
             // 
             // SprinklersBox
             // 
             this.SprinklersBox.AutoSize = true;
-            this.SprinklersBox.Checked = true;
-            this.SprinklersBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.SprinklersBox.Location = new System.Drawing.Point(6, 19);
             this.SprinklersBox.Name = "SprinklersBox";
             this.SprinklersBox.Size = new System.Drawing.Size(114, 17);
@@ -857,21 +863,12 @@
             this.label16.TabIndex = 15;
             this.label16.Text = "Press F1 for help on the current selection";
             // 
-            // AutoHumidity
-            // 
-            this.AutoHumidity.AutoSize = true;
-            this.AutoHumidity.Location = new System.Drawing.Point(165, 115);
-            this.AutoHumidity.Name = "AutoHumidity";
-            this.AutoHumidity.Size = new System.Drawing.Size(48, 17);
-            this.AutoHumidity.TabIndex = 14;
-            this.AutoHumidity.Text = "Auto";
-            this.AutoHumidity.UseVisualStyleBackColor = true;
-            // 
             // TStat
             // 
             this.AcceptButton = this.RefreshButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.ClientSize = new System.Drawing.Size(872, 506);
             this.Controls.Add(this.label16);

@@ -57,7 +57,7 @@ namespace JimsX10
         public WxUnits mWxDataUnits;
         public WxUnits mWxDisplayUnits;
         public double Rain24; // rain in the last 24 hours.  Used to control sprinkler override.
-        bool checkRain = true;
+
         DateTime last_run = new DateTime(); // used for compressor timer
         int BarnSensorNum = 1; // assume the barn uses outside temp for now.  Sensor can be selected later.
         public int errorcount = 0;
@@ -68,19 +68,14 @@ namespace JimsX10
         // this timer will call our processing function every 10 seconds.
         //
         System.Windows.Forms.Timer mTimer;
+        System.Windows.Forms.Timer checkTimer;
         //
         //
         // information about temperatures used sensorTimeoutLimit make decisions about fan on/off states.
         //        
-        DateTime lastInside;        // last time an currentInsideTemp temperature reading was received
-        DateTime lastOutside;       // same for currentOutsideTemp temperature
-        DateTime lastAc;            // and for the A/C temperature
-
-        double currentInsideTemp = 0.0;        // current indoor temperature
-        double currentOutsideTemp = 100.0;     // current outdoor temperature
-        double currentAcTemp = 0.0;            // current A/C regulated temperature
-
-        //
+        DateTime[] lasttemp = new DateTime[10];        // last time an currentInsideTemp temperature reading was received
+        TimeSpan sensorTimeoutLimit = new TimeSpan(0, 10, 0);
+ 
         // label colors used sensorTimeoutLimit indicate status
         //
         Color okColor = Color.LimeGreen;
@@ -111,6 +106,12 @@ namespace JimsX10
             mTimer.Tick += new EventHandler(Process);
             mTimer.Interval = 10000;  // check temperatures every 10 seconds
             mTimer.Start();
+
+            checkTimer = new System.Windows.Forms.Timer();
+            checkTimer.Tick += new EventHandler(processCheck);
+            checkTimer.Interval = 30000; //confirm check box state every 30s
+            checkTimer.Start();
+
             last_run = DateTime.Now; // this is used to time the compressor off time to prevent rapid start
             wind = 0;
             mWxDisplayUnits.Temperature = TemperatureUnit.degF;
@@ -187,8 +188,10 @@ namespace JimsX10
                 sensorWC[i].Width = 50;
 
                 BarnSensor.Items.Add(sensorName[i].Text); // add this sensor to the barn control selection
+                
             }
                 load_settings();
+                Rain24 = 0;
             
         }
 
@@ -376,7 +379,23 @@ namespace JimsX10
             else
                 FreshAirFan.Checked = false;
 
-            if (checkRain) rain(); // if rain check is enabled, run the check.
+            // compare the 24 hour rain to the threshold
+            try
+            {
+                
+                if (Rain24 < Convert.ToDouble(RainThresh.Text))
+                {
+                    SprinklersBox.Checked = true;
+                }
+                else
+                {
+                    SprinklersBox.Checked = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Check rain threshold: " + ex);
+            }
             Rain24Label.Text = "24hr Actual Rain: " + Rain24.ToString("#0.00in");
            
             UpdateLabel.Text = "Updated: " + DateTime.Now.ToLongTimeString();
@@ -579,39 +598,9 @@ namespace JimsX10
             }
         }
 
-        private bool rain()
-        {
-            // compare the 24 hour rain to the threshold
-            try
-            {
-                if (Rain24 < Convert.ToDouble(RainThresh.Text))
-                {
-                        SprinklersBox.Checked = true;
-                }
-                else
-                {
-                        SprinklersBox.Checked = false;
-                }
-                return true;
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("Check rain threshold: " + ex);
-                checkRain = false;
-                return false;
-            }
-        }
+ 
 
-        private void X10Address_TextChanged(object sender, EventArgs e)
-        {
-            checkRain = true;
-        }
-
-        private void RainThresh_TextChanged(object sender, EventArgs e)
-        {
-            checkRain = true;
-        }
-
+ 
         private void SprinklersBox_CheckedChanged(object sender, EventArgs e)
         {
             if (SprinklersBox.Checked)
@@ -806,16 +795,14 @@ namespace JimsX10
             {
                 try
                 {
-                    if (ON) // if it is already in the correct state leave it alone, else switch it.
-                    {
-                        if (!act.SendAction("queryplc", address + " on", null, null).Equals(1))
-                            act.SendAction("sendplc", address + " on", null, null);
-                    }
-                    else
-                    {
-                        if (act.SendAction("queryplc", address + " on", null, null).Equals(1))
-                            act.SendAction("sendplc", address + " off", null, null);
-                    }
+                    object act2 = act.SendAction("queryplc", address + " on", null, null);
+                    bool isON = act2.Equals(1);
+
+                    if(!ON && isON) // if not supposed to be ON but is
+                      act.SendAction("sendplc", address + " off", null, null);
+                    else if(ON && !isON) // if is ON but should not be
+                      act.SendAction("sendplc", address + " on", null, null);
+
                     errorcount = 0;
                     return true;
                 }
@@ -823,7 +810,7 @@ namespace JimsX10
                 {
                     AppendToFile("Error accessing X10 device: " + address);
                     ++errorcount;
-                    if (errorcount < ERRORMAX)
+                    if (errorcount > ERRORMAX)
                     {
                         //   MessageBox.Show("Error accessing X10 device: " + address + "    " + ex);
                     }
@@ -838,29 +825,29 @@ namespace JimsX10
             // check the current state of an X10 device
             
             ActiveHomeScriptLib.ActiveHomeClass act = new ActiveHomeScriptLib.ActiveHomeClass();
-            return true;
+            bool rtn;
             if (X10Address(address))
             {
                 try
                 {
                     if (act.SendAction("queryplc", address + " on", null, null).Equals(1))
-                    {
-                        errorcount = 0;
-                        return true;
-                    }
+                       rtn = true;
                     else
-                        return false;
+                        rtn = false;
+                    errorcount = 0;
+                    return rtn;
                 }
                 catch (Exception ex)
                 {
                     AppendToFile("Error accessing X10 device: " + address);
                     ++errorcount;
-                    if (errorcount < ERRORMAX)
+                    if (errorcount > ERRORMAX)
                     {
                         MessageBox.Show("Error accessing X10 device: " + address + "    " + ex);
                     }
                     return state;
                 }
+                
             }
             else
                 return state;
@@ -885,6 +872,18 @@ namespace JimsX10
             return true;
         }
 
+        private void processCheck(object sender, EventArgs e)
+        {
+            // make sure the current check mark matches the actual state
+            CoolCompressor.Checked = X10check(CoolCompressor.Checked, CoolAddress.Text);
+            MixFan.Checked = X10check(MixFan.Checked, FanAddress.Text);
+            Heat.Checked = X10check(Heat.Checked, HeatAddress.Text);
+            HumidifierCheck.Checked = X10check(HumidifierCheck.Checked, HumidifierAddress.Text);
+            SprinklersBox.Checked = X10check(SprinklersBox.Checked, SprinklerAddress.Text);
+            BarnHeat.Checked = X10check(BarnHeat.Checked, BarnHeatAdd.Text);
+            BarnCool.Checked = X10check(BarnCool.Checked, BarnCoolAdd.Text);
+            FreshAirFan.Checked = X10check(FreshAirFan.Checked, FreshAdd.Text);
+        }
  
                 /// <summary>
         /// This function runs periodically (called by the timer tick event) and
@@ -950,6 +949,11 @@ namespace JimsX10
                                 mWxDataUnits.Temperature, TemperatureUnit.degF));
                     sensorWCnum[sd.Sensor] = Moisture.WindChill(WxTemperatureUnit.Convert(sd.Record.Temperature,
                                 mWxDataUnits.Temperature, TemperatureUnit.degF), WxSpeedUnit.Convert(wnd, SpeedUnit.m_per_sec, SpeedUnit.mi_per_hr));
+
+                    DateTime now = DateTime.UtcNow;
+                    TimeSpan sinceTemp = now - lasttemp[sd.Sensor];
+                    sensorName[sd.Sensor].BackColor = (sinceTemp > sensorTimeoutLimit) ? oldColor : okColor;
+                    lasttemp[sd.Sensor] = now;
                     continue;
                 }
 
@@ -968,18 +972,15 @@ namespace JimsX10
                     continue;
                 }
               
+            
             }
             //
             // how long has it been since we have received data from each sensor?
             // keep the longest time interval of them all. 
-            //
-            DateTime now = DateTime.UtcNow;
-            TimeSpan sinceInsideTemp = now - lastInside;
-            TimeSpan sinceOutsideTemp = now - lastOutside;
-            TimeSpan sinceAcTemp = now - lastAc;
+            //  
 
-            TimeSpan oldestSensor = (sinceInsideTemp > sinceOutsideTemp) ? sinceInsideTemp : sinceOutsideTemp;
-            oldestSensor = (oldestSensor > sinceAcTemp) ? oldestSensor : sinceAcTemp;
+            //TimeSpan oldestSensor = (sinceInsideTemp > sinceOutsideTemp) ? sinceInsideTemp : sinceOutsideTemp;
+            //oldestSensor = (oldestSensor > sinceAcTemp) ? oldestSensor : sinceAcTemp;
             UpdateStatus(); // run the main loop and update the form
         }
 
