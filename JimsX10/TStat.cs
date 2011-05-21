@@ -217,11 +217,23 @@ namespace JimsX10
             BarnSensor.SelectedIndex = BarnSensorNum;
             FreshAdd.Text = Properties.Settings.Default.TStatFreshAdd;
             MaxInDP.Value = Properties.Settings.Default.TStatMaxDP;
-            for(int i = 0;i<11 ; i++)
+            AutoHumidity.Checked = Properties.Settings.Default.AutoDesHumidity;
+            for(int i = 0;i<10 ; i++)
             {
                 bool chk = Convert.ToBoolean( Properties.Settings.Default.CheckBoxes[i]);
                 sensorName[i].Checked = chk ;
+                String test = Properties.Settings.Default.CheckBoxes[i];
             }
+            // make sure the current check mark matches the actual state
+            CoolCompressor.Checked = X10check(CoolCompressor.Checked, CoolAddress.Text);
+            MixFan.Checked = X10check(MixFan.Checked, FanAddress.Text);
+            Heat.Checked = X10check(Heat.Checked, HeatAddress.Text);
+            HumidifierCheck.Checked = X10check(HumidifierCheck.Checked, HumidifierAddress.Text);
+            SprinklersBox.Checked = X10check(SprinklersBox.Checked, SprinklerAddress.Text);
+            BarnHeat.Checked = X10check(BarnHeat.Checked, BarnHeatAdd.Text);
+            BarnCool.Checked = X10check(BarnCool.Checked, BarnCoolAdd.Text);
+            FreshAirFan.Checked = X10check(FreshAirFan.Checked, FreshAdd.Text);
+
         }
 
         private void SaveSet_Click(object sender, EventArgs e)
@@ -247,6 +259,7 @@ namespace JimsX10
             Properties.Settings.Default.TStatBarnSensor = BarnSensorNum;
             Properties.Settings.Default.TStatFreshAdd = FreshAdd.Text;
             Properties.Settings.Default.TStatMaxDP = MaxInDP.Value;
+            Properties.Settings.Default.AutoDesHumidity = AutoHumidity.Checked;
             for (int i = 0; i < 10; i++)
             {
                 Properties.Settings.Default.CheckBoxes[i] = Convert.ToString(sensorName[i].Checked);
@@ -280,7 +293,6 @@ namespace JimsX10
             int cnt = 0;
             for (int i = 0; i < Properties.Settings.Default.TempSensorCount; i++)
             {
- 
                 if (sensorName[i].Checked)
                 {
                     ++cnt;
@@ -291,24 +303,13 @@ namespace JimsX10
                     if (temp > max) max = temp;
                     if (temp < min) min = temp;
                     if (sensorRHNum[i] > 0) ++areok;
-                }
-
- 
+                } 
             }
 
             if (cnt == areok) ok = true;
             else ok = false;
 
-            // make sure the current check mark matches the actual state
-            CoolCompressor.Checked = X10check(CoolCompressor.Checked, CoolAddress.Text);
-            MixFan.Checked = X10check(MixFan.Checked, FanAddress.Text);
-            Heat.Checked = X10check(Heat.Checked, HeatAddress.Text);
-            HumidifierCheck.Checked = X10check(HumidifierCheck.Checked, HumidifierAddress.Text);
-            SprinklersBox.Checked = X10check(SprinklersBox.Checked, SprinklerAddress.Text);
-            BarnHeat.Checked = X10check(BarnHeat.Checked, BarnHeatAdd.Text);
-            BarnCool.Checked = X10check(BarnCool.Checked, BarnCoolAdd.Text);
-            FreshAirFan.Checked = X10check(FreshAirFan.Checked, FreshAdd.Text);
-
+ 
             // calculate the apparent temps and update the display
             for (int i = 0; i < Properties.Settings.Default.TempSensorCount; ++i)
             {
@@ -352,7 +353,7 @@ namespace JimsX10
 
             
             // reset the max desired humdity based on outdoor temp
-            //DesHumidity.Maximum = Convert.ToDecimal(MaxDesHum());
+            if(AutoHumidity.Checked) DesHumidity.Value = Convert.ToDecimal(MaxDesHum());
             if (DesHumidity.Value > Convert.ToDecimal(MaxDesHum()))
                 DesHumudityLabel.BackColor = Color.Red;
             else
@@ -848,7 +849,7 @@ namespace JimsX10
                         return true;
                     }
                     else
-                    return state;
+                        return false;
                 }
                 catch (Exception ex)
                 {
@@ -858,7 +859,7 @@ namespace JimsX10
                     {
                         MessageBox.Show("Error accessing X10 device: " + address + "    " + ex);
                     }
-                    return false;
+                    return state;
                 }
             }
             else

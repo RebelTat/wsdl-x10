@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TStat));
             this.CoolingDesiredMax = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -43,7 +42,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.MaxSplit = new System.Windows.Forms.NumericUpDown();
             this.ActCondGroup = new System.Windows.Forms.GroupBox();
-            this.usbCheck = new System.Windows.Forms.CheckBox();
+            this.WindLabel = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.AveHumLabel = new System.Windows.Forms.Label();
@@ -91,7 +90,7 @@
             this.UpdateLabel = new System.Windows.Forms.Label();
             this.helpProvider1 = new System.Windows.Forms.HelpProvider();
             this.label16 = new System.Windows.Forms.Label();
-            this.WindLabel = new System.Windows.Forms.Label();
+            this.AutoHumidity = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.CoolingDesiredMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeatDesiredMin)).BeginInit();
             this.DesiredConditionsGp.SuspendLayout();
@@ -176,6 +175,7 @@
             // 
             // DesiredConditionsGp
             // 
+            this.DesiredConditionsGp.Controls.Add(this.AutoHumidity);
             this.DesiredConditionsGp.Controls.Add(this.label13);
             this.DesiredConditionsGp.Controls.Add(this.MaxInDP);
             this.DesiredConditionsGp.Controls.Add(this.DesHumudityLabel);
@@ -323,7 +323,6 @@
             // ActCondGroup
             // 
             this.ActCondGroup.Controls.Add(this.WindLabel);
-            this.ActCondGroup.Controls.Add(this.usbCheck);
             this.ActCondGroup.Controls.Add(this.label15);
             this.ActCondGroup.Controls.Add(this.label14);
             this.ActCondGroup.Controls.Add(this.AveHumLabel);
@@ -339,15 +338,14 @@
             this.ActCondGroup.TabStop = false;
             this.ActCondGroup.Text = "Actual Conditions";
             // 
-            // usbCheck
+            // WindLabel
             // 
-            this.usbCheck.AutoSize = true;
-            this.usbCheck.Location = new System.Drawing.Point(502, 342);
-            this.usbCheck.Name = "usbCheck";
-            this.usbCheck.Size = new System.Drawing.Size(54, 17);
-            this.usbCheck.TabIndex = 13;
-            this.usbCheck.Text = "USB?";
-            this.usbCheck.UseVisualStyleBackColor = true;
+            this.WindLabel.AutoSize = true;
+            this.WindLabel.Location = new System.Drawing.Point(9, 333);
+            this.WindLabel.Name = "WindLabel";
+            this.WindLabel.Size = new System.Drawing.Size(32, 13);
+            this.WindLabel.TabIndex = 14;
+            this.WindLabel.Text = "Wind";
             // 
             // label15
             // 
@@ -859,14 +857,15 @@
             this.label16.TabIndex = 15;
             this.label16.Text = "Press F1 for help on the current selection";
             // 
-            // WindLabel
+            // AutoHumidity
             // 
-            this.WindLabel.AutoSize = true;
-            this.WindLabel.Location = new System.Drawing.Point(9, 333);
-            this.WindLabel.Name = "WindLabel";
-            this.WindLabel.Size = new System.Drawing.Size(32, 13);
-            this.WindLabel.TabIndex = 14;
-            this.WindLabel.Text = "Wind";
+            this.AutoHumidity.AutoSize = true;
+            this.AutoHumidity.Location = new System.Drawing.Point(165, 115);
+            this.AutoHumidity.Name = "AutoHumidity";
+            this.AutoHumidity.Size = new System.Drawing.Size(48, 17);
+            this.AutoHumidity.TabIndex = 14;
+            this.AutoHumidity.Text = "Auto";
+            this.AutoHumidity.UseVisualStyleBackColor = true;
             // 
             // TStat
             // 
@@ -976,7 +975,7 @@
         private System.Windows.Forms.Label UpdateLabel;
         private System.Windows.Forms.HelpProvider helpProvider1;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.CheckBox usbCheck;
         private System.Windows.Forms.Label WindLabel;
+        private System.Windows.Forms.CheckBox AutoHumidity;
     }
 }

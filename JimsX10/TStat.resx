@@ -156,9 +156,6 @@
   <data name="BarnCoolAdd.HelpString" xml:space="preserve">
     <value>This is the address for the X10 device to turn ON when the barn cooling ON box is checked.  The box is automatically checked/unchecked by this software based on desired and actual conditions.  If this address is left blank, no X10 device is used for this feature (so nothing will happen).  X10 addresses are  in the format of a letter (a-f) and a number 1-16.  This software only controls PLC addresses.  </value>
   </data>
-  <metadata name="usb.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>144, 17</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
