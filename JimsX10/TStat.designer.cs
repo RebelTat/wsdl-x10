@@ -425,6 +425,7 @@
             this.IndoorTemp1Label.TabIndex = 0;
             this.IndoorTemp1Label.Text = "Temperature";
             this.IndoorTemp1Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.IndoorTemp1Label.MouseHover += new System.EventHandler(this.Temp_Hover);
             // 
             // AveIndTempLabel
             // 
@@ -887,6 +888,7 @@
             this.MaximizeBox = false;
             this.Name = "TStat";
             this.Text = "Home Control";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HideButton_Click);
             this.Load += new System.EventHandler(this.TStat_Load);
             ((System.ComponentModel.ISupportInitialize)(this.CoolingDesiredMax)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeatDesiredMin)).EndInit();

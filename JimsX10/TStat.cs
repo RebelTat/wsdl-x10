@@ -36,7 +36,19 @@ using WsdlClientInterface;
 
 namespace JimsX10
 {
-    
+    private struct tempMinMax
+    {
+        public double tempMin;
+        public double tempMax;
+        public double DPMin;
+        public double DPMax;
+        public double RHMin;
+        public double RHMax;
+        public double ATMin;
+        public double ATMax;
+        public double HIMax;
+        public double WCMin;
+    }
     
     public partial class TStat : Form
     {
@@ -53,6 +65,7 @@ namespace JimsX10
         public double[] sensorATnum = new double[11]; // Apparent temperature values
         public double[] sensorHInum = new double[11]; // Heat index temperature values
         public double[] sensorWCnum = new double[11]; // Wind Chill temperature values
+        public tempMinMax[] tMinMax = new tempMinMax[11]; // array of min/max values
         double wind; // store the latest average wind
         public WxUnits mWxDataUnits;
         public WxUnits mWxDisplayUnits;
@@ -279,6 +292,12 @@ namespace JimsX10
         {
             //this.Visible = false;  // hide this control
             this.Close();
+            mClient.Disconnect();
+            this.Dispose();
+        }
+        private void HideButton_Click(object sender, FormClosingEventArgs e)
+        {
+            //this.Visible = false;  // hide this control
             mClient.Disconnect();
             this.Dispose();
         }
@@ -954,6 +973,17 @@ namespace JimsX10
                     TimeSpan sinceTemp = now - lasttemp[sd.Sensor];
                     sensorName[sd.Sensor].BackColor = (sinceTemp > sensorTimeoutLimit) ? oldColor : okColor;
                     lasttemp[sd.Sensor] = now;
+                    // store all the min/max data
+                    if (sensorATnum[sd.Sensor] > tMinMax[sd.Sensor].ATMax) tMinMax[sd.Sensor].ATMax = sensorATnum[sd.Sensor];
+                    if (sensorATnum[sd.Sensor] < tMinMax[sd.Sensor].ATMin) tMinMax[sd.Sensor].ATMin = sensorATnum[sd.Sensor];
+                    if (sensorTempNum[sd.Sensor] > tMinMax[sd.Sensor].tempMax) tMinMax[sd.Sensor].tempMax = sensorTempNum[sd.Sensor];
+                    if (sensorTempNum[sd.Sensor] < tMinMax[sd.Sensor].tempMin) tMinMax[sd.Sensor].tempMin = sensorTempNum[sd.Sensor];
+                    if (sensorDPNum[sd.Sensor] > tMinMax[sd.Sensor].DPMax) tMinMax[sd.Sensor].DPMax = sensorDPNum[sd.Sensor];
+                    if (sensorDPNum[sd.Sensor] < tMinMax[sd.Sensor].DPMin) tMinMax[sd.Sensor].DPMin = sensorDPNum[sd.Sensor];
+                    if (sensorRHNum[sd.Sensor] > tMinMax[sd.Sensor].RHMax) tMinMax[sd.Sensor].RHMax = sensorRHNum[sd.Sensor];
+                    if (sensorRHNum[sd.Sensor] < tMinMax[sd.Sensor].RHMin) tMinMax[sd.Sensor].RHMin = sensorRHNum[sd.Sensor];
+                    if (sensorHInum[sd.Sensor] > tMinMax[sd.Sensor].HIMax) tMinMax[sd.Sensor].HIMax = sensorHInum[sd.Sensor];
+                    if (sensorWCnum[sd.Sensor] < tMinMax[sd.Sensor].WCMin) tMinMax[sd.Sensor].WCMin = sensorWCnum[sd.Sensor];
                     continue;
                 }
 
@@ -992,6 +1022,9 @@ namespace JimsX10
                 DesHumudityLabel.BackColor = Color.LightGreen;
         }
 
- 
+        private void Temp_Hover(object sender, EventArgs e)
+        {
+
+        } 
     }
 }
