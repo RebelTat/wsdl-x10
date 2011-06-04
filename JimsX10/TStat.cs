@@ -36,7 +36,7 @@ using WsdlClientInterface;
 
 namespace JimsX10
 {
-    private struct tempMinMax
+    public struct tempMinMax
     {
         public double tempMin;
         public double tempMax;
@@ -70,6 +70,7 @@ namespace JimsX10
         public WxUnits mWxDataUnits;
         public WxUnits mWxDisplayUnits;
         public double Rain24; // rain in the last 24 hours.  Used to control sprinkler override.
+        AboutBox1 about = new AboutBox1();
 
         DateTime last_run = new DateTime(); // used for compressor timer
         int BarnSensorNum = 1; // assume the barn uses outside temp for now.  Sensor can be selected later.
@@ -161,13 +162,14 @@ namespace JimsX10
                 // make an attempt to find indoor sensors.  OK, so it's a cheesy attempt.  Nice to have something better.
                 //if (!Properties.Settings.Default.SensorNames[i].Contains("Out")) sensorName[i].Checked = true;
                 sensorName[i].CheckedChanged += new EventHandler(TStat_TextChanged);
-
+                
                 sensorTemp[i] = new Label();
                 this.ActCondGroup.Controls.Add(sensorTemp[i]);
                 sensorTemp[i].Text = "N/A";
                 sensorTemp[i].Width = 50;
                 sensorTemp[i].Location = new System.Drawing.Point(150, 45 + 26 * i);
                 sensorTemp[i].TextChanged += new EventHandler(TStat_TextChanged);
+                
 
                 sensorDP[i] = new Label();
                 this.ActCondGroup.Controls.Add(sensorDP[i]);
@@ -205,7 +207,7 @@ namespace JimsX10
             }
                 load_settings();
                 Rain24 = 0;
-            
+                resetMiinMaxToolStripMenuItem_Click(null, null);
         }
 
         private void load_settings()
@@ -240,6 +242,7 @@ namespace JimsX10
                 sensorName[i].Checked = chk ;
                 String test = Properties.Settings.Default.CheckBoxes[i];
             }
+            fehrenheitToolStripMenuItem.Checked = Properties.Settings.Default.TUnitsdegF;
             // make sure the current check mark matches the actual state
             CoolCompressor.Checked = X10check(CoolCompressor.Checked, CoolAddress.Text);
             MixFan.Checked = X10check(MixFan.Checked, FanAddress.Text);
@@ -280,6 +283,7 @@ namespace JimsX10
             {
                 Properties.Settings.Default.CheckBoxes[i] = Convert.ToString(sensorName[i].Checked);
             }
+            Properties.Settings.Default.TUnitsdegF = fehrenheitToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
         }
         void TStat_TextChanged(object sender, EventArgs e)
@@ -688,7 +692,28 @@ namespace JimsX10
             return ok;
         }
 
+        private void exportLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            String file = Properties.Settings.Default.LogFilePath + "HomeControlLog.csv";
+            if(File.Exists(file))
+            {
+                saveFileDialog1.Filter = "CSV File|*.csv";
+                saveFileDialog1.Title = "Save log File";
+                saveFileDialog1.ShowDialog();
 
+                if (saveFileDialog1.FileName != "")
+                {
+                    if (File.Exists(saveFileDialog1.FileName)) File.Delete(saveFileDialog1.FileName);
+                    File.Copy(file, saveFileDialog1.FileName);
+                }
+            }
+        }
+
+        private void deleteLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            String file = Properties.Settings.Default.LogFilePath + "HomeControlLog.csv";
+            if (File.Exists(file)) File.Delete(file);
+        }
 
         private void Reload_Click(object sender, EventArgs e)
         {
@@ -1024,7 +1049,130 @@ namespace JimsX10
 
         private void Temp_Hover(object sender, EventArgs e)
         {
+            
+            
+        }
 
-        } 
+ 
+
+        private void saveSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveSet_Click(null, null);
+        }
+
+        private void minMaxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MinMaxForm mx = new MinMaxForm();
+            string u = WxTemperatureUnit.ToString(mWxDisplayUnits.Temperature);
+            mx.dataGridView1.Rows.Add(tMinMax.Length - 1);
+
+            for (int count = 0; count < tMinMax.Length - 1; count++)
+            {
+                mx.dataGridView1.Rows[count].Cells[0].Value = count.ToString();
+                if (tMinMax[count].tempMin < 999)
+                    mx.dataGridView1.Rows[count].Cells[1].Value = WxTemperatureUnit.DspString(tMinMax[count].tempMin, mWxDataUnits.Temperature, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[1].Value = "-";
+
+                if (tMinMax[count].tempMax > -99)
+                    mx.dataGridView1.Rows[count].Cells[2].Value = WxTemperatureUnit.DspString(tMinMax[count].tempMax, mWxDataUnits.Temperature, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[2].Value = "-";
+
+                if (tMinMax[count].ATMin < 999)
+                    mx.dataGridView1.Rows[count].Cells[3].Value = WxTemperatureUnit.DspString(tMinMax[count].ATMin, mWxDataUnits.Temperature, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[3].Value = "-";
+
+                if (tMinMax[count].ATMax > -99)
+                    mx.dataGridView1.Rows[count].Cells[4].Value = WxTemperatureUnit.DspString(tMinMax[count].ATMax, mWxDataUnits.Temperature, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[4].Value = "-";
+
+                if (tMinMax[count].DPMin < 99)
+                    mx.dataGridView1.Rows[count].Cells[5].Value = WxTemperatureUnit.DspString(tMinMax[count].DPMin, mWxDataUnits.Temperature, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[5].Value = "-";
+
+                if (tMinMax[count].DPMax > -99)
+                    mx.dataGridView1.Rows[count].Cells[6].Value = WxTemperatureUnit.DspString(tMinMax[count].DPMax, mWxDataUnits.Temperature, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[6].Value = "-";
+
+                if (tMinMax[count].RHMin < 100)
+                    mx.dataGridView1.Rows[count].Cells[7].Value = tMinMax[count].RHMin.ToString("F1") + "%";
+                else
+                    mx.dataGridView1.Rows[count].Cells[7].Value = "-";
+
+                if (tMinMax[count].RHMax > 0)
+                    mx.dataGridView1.Rows[count].Cells[8].Value = tMinMax[count].RHMax.ToString("F1") + "%";
+                else
+                    mx.dataGridView1.Rows[count].Cells[8].Value = "-";
+
+                if (tMinMax[count].WCMin < 999)
+                    mx.dataGridView1.Rows[count].Cells[9].Value = WxTemperatureUnit.DspString(tMinMax[count].WCMin, TemperatureUnit.degF, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[9].Value = "-";
+
+                if (tMinMax[count].HIMax > -99)
+                    mx.dataGridView1.Rows[count].Cells[10].Value = WxTemperatureUnit.DspString(tMinMax[count].HIMax, TemperatureUnit.degF, mWxDisplayUnits.Temperature) + u;
+                else
+                    mx.dataGridView1.Rows[count].Cells[10].Value = "-";
+            }
+
+            mx.ShowDialog();
+        }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            about.Show();
+        }
+
+        private void resetMiinMaxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            for(int i = 0; i<10;i++)
+            {
+                tMinMax[i].ATMax = -99;
+                tMinMax[i].ATMin = 999;
+                tMinMax[i].DPMax = -99;
+                tMinMax[i].DPMin = 99;
+                tMinMax[i].HIMax = -99;
+                tMinMax[i].RHMax = 0;
+                tMinMax[i].RHMin = 100;
+                tMinMax[i].tempMax = -99;
+                tMinMax[i].tempMin = 999;
+                tMinMax[i].WCMin = 999;
+            }
+        }
+
+        private void celciusToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (celciusToolStripMenuItem.Checked)
+            {
+                mWxDisplayUnits.Temperature = TemperatureUnit.degC;
+                fehrenheitToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                mWxDisplayUnits.Temperature = TemperatureUnit.degF;
+                fehrenheitToolStripMenuItem.Checked = true;
+            }
+        }
+
+        private void fehrenheitToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (fehrenheitToolStripMenuItem.Checked)
+            {
+                mWxDisplayUnits.Temperature = TemperatureUnit.degF;
+                celciusToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                mWxDisplayUnits.Temperature = TemperatureUnit.degC;
+                celciusToolStripMenuItem.Checked = true;
+            }
+        }
+
+        
     }
 }

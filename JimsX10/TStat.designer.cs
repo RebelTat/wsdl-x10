@@ -91,6 +91,20 @@
             this.UpdateLabel = new System.Windows.Forms.Label();
             this.helpProvider1 = new System.Windows.Forms.HelpProvider();
             this.label16 = new System.Windows.Forms.Label();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minMaxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetMiinMaxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.celciusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fehrenheitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.CoolingDesiredMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeatDesiredMin)).BeginInit();
             this.DesiredConditionsGp.SuspendLayout();
@@ -103,6 +117,7 @@
             this.BarnGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BarnDesMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BarnDesMax)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // CoolingDesiredMax
@@ -187,7 +202,7 @@
             this.DesiredConditionsGp.Controls.Add(this.HeatDesiredMin);
             this.DesiredConditionsGp.Controls.Add(this.CoolingDesiredMax);
             this.DesiredConditionsGp.Controls.Add(this.label3);
-            this.DesiredConditionsGp.Location = new System.Drawing.Point(3, 12);
+            this.DesiredConditionsGp.Location = new System.Drawing.Point(3, 47);
             this.DesiredConditionsGp.Name = "DesiredConditionsGp";
             this.DesiredConditionsGp.Size = new System.Drawing.Size(293, 140);
             this.DesiredConditionsGp.TabIndex = 5;
@@ -341,9 +356,9 @@
             this.ActCondGroup.Controls.Add(this.label1);
             this.ActCondGroup.Controls.Add(this.IndoorTemp1Label);
             this.ActCondGroup.Controls.Add(this.AveIndTempLabel);
-            this.ActCondGroup.Location = new System.Drawing.Point(302, 32);
+            this.ActCondGroup.Location = new System.Drawing.Point(302, 68);
             this.ActCondGroup.Name = "ActCondGroup";
-            this.ActCondGroup.Size = new System.Drawing.Size(562, 365);
+            this.ActCondGroup.Size = new System.Drawing.Size(562, 342);
             this.ActCondGroup.TabIndex = 6;
             this.ActCondGroup.TabStop = false;
             this.ActCondGroup.Text = "Actual Conditions";
@@ -351,7 +366,7 @@
             // WindLabel
             // 
             this.WindLabel.AutoSize = true;
-            this.WindLabel.Location = new System.Drawing.Point(9, 333);
+            this.WindLabel.Location = new System.Drawing.Point(14, 309);
             this.WindLabel.Name = "WindLabel";
             this.WindLabel.Size = new System.Drawing.Size(32, 13);
             this.WindLabel.TabIndex = 14;
@@ -380,7 +395,7 @@
             // AveHumLabel
             // 
             this.AveHumLabel.AutoSize = true;
-            this.AveHumLabel.Location = new System.Drawing.Point(211, 349);
+            this.AveHumLabel.Location = new System.Drawing.Point(220, 322);
             this.AveHumLabel.Name = "AveHumLabel";
             this.AveHumLabel.Size = new System.Drawing.Size(90, 13);
             this.AveHumLabel.TabIndex = 12;
@@ -430,7 +445,7 @@
             // AveIndTempLabel
             // 
             this.AveIndTempLabel.AutoSize = true;
-            this.AveIndTempLabel.Location = new System.Drawing.Point(6, 349);
+            this.AveIndTempLabel.Location = new System.Drawing.Point(14, 322);
             this.AveIndTempLabel.Name = "AveIndTempLabel";
             this.AveIndTempLabel.Size = new System.Drawing.Size(89, 13);
             this.AveIndTempLabel.TabIndex = 1;
@@ -439,7 +454,7 @@
             // HideButton
             // 
             this.HideButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.HideButton.Location = new System.Drawing.Point(824, 2);
+            this.HideButton.Location = new System.Drawing.Point(824, 45);
             this.HideButton.Name = "HideButton";
             this.HideButton.Size = new System.Drawing.Size(40, 23);
             this.HideButton.TabIndex = 7;
@@ -460,7 +475,7 @@
             this.StatusGp.Controls.Add(this.MixFan);
             this.StatusGp.Controls.Add(this.Heat);
             this.StatusGp.Controls.Add(this.CoolCompressor);
-            this.StatusGp.Location = new System.Drawing.Point(3, 158);
+            this.StatusGp.Location = new System.Drawing.Point(3, 198);
             this.StatusGp.Name = "StatusGp";
             this.StatusGp.Size = new System.Drawing.Size(293, 150);
             this.StatusGp.TabIndex = 8;
@@ -589,7 +604,7 @@
             // 
             // RefreshButton
             // 
-            this.RefreshButton.Location = new System.Drawing.Point(764, 2);
+            this.RefreshButton.Location = new System.Drawing.Point(764, 45);
             this.RefreshButton.Name = "RefreshButton";
             this.RefreshButton.Size = new System.Drawing.Size(54, 23);
             this.RefreshButton.TabIndex = 9;
@@ -605,9 +620,9 @@
             this.Sprinkler.Controls.Add(this.SprinklerAddressLabel);
             this.Sprinkler.Controls.Add(this.SprinklerAddress);
             this.Sprinkler.Controls.Add(this.SprinklersBox);
-            this.Sprinkler.Location = new System.Drawing.Point(3, 314);
+            this.Sprinkler.Location = new System.Drawing.Point(3, 354);
             this.Sprinkler.Name = "Sprinkler";
-            this.Sprinkler.Size = new System.Drawing.Size(293, 164);
+            this.Sprinkler.Size = new System.Drawing.Size(293, 150);
             this.Sprinkler.TabIndex = 10;
             this.Sprinkler.TabStop = false;
             this.Sprinkler.Text = "Sprinkler Control";
@@ -675,9 +690,9 @@
             // 
             // SaveSet
             // 
-            this.SaveSet.Location = new System.Drawing.Point(565, 3);
+            this.SaveSet.Location = new System.Drawing.Point(572, 47);
             this.SaveSet.Name = "SaveSet";
-            this.SaveSet.Size = new System.Drawing.Size(95, 21);
+            this.SaveSet.Size = new System.Drawing.Size(88, 21);
             this.SaveSet.TabIndex = 11;
             this.SaveSet.Text = "Save Settings";
             this.SaveSet.UseVisualStyleBackColor = true;
@@ -685,7 +700,7 @@
             // 
             // Reload
             // 
-            this.Reload.Location = new System.Drawing.Point(666, 2);
+            this.Reload.Location = new System.Drawing.Point(666, 46);
             this.Reload.Name = "Reload";
             this.Reload.Size = new System.Drawing.Size(92, 22);
             this.Reload.TabIndex = 12;
@@ -707,9 +722,9 @@
             this.BarnGroup.Controls.Add(this.BarnDesMax);
             this.BarnGroup.Controls.Add(this.BarnCoolAdd);
             this.BarnGroup.Controls.Add(this.BarnCool);
-            this.BarnGroup.Location = new System.Drawing.Point(302, 403);
+            this.BarnGroup.Location = new System.Drawing.Point(302, 416);
             this.BarnGroup.Name = "BarnGroup";
-            this.BarnGroup.Size = new System.Drawing.Size(562, 94);
+            this.BarnGroup.Size = new System.Drawing.Size(562, 88);
             this.BarnGroup.TabIndex = 13;
             this.BarnGroup.TabStop = false;
             this.BarnGroup.Text = "Barn Control";
@@ -849,7 +864,7 @@
             // UpdateLabel
             // 
             this.UpdateLabel.AutoSize = true;
-            this.UpdateLabel.Location = new System.Drawing.Point(312, 12);
+            this.UpdateLabel.Location = new System.Drawing.Point(311, 47);
             this.UpdateLabel.Name = "UpdateLabel";
             this.UpdateLabel.Size = new System.Drawing.Size(67, 13);
             this.UpdateLabel.TabIndex = 14;
@@ -858,11 +873,125 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 485);
+            this.label16.Location = new System.Drawing.Point(0, 507);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(200, 13);
             this.label16.TabIndex = 15;
             this.label16.Text = "Press F1 for help on the current selection";
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem,
+            this.optionsToolStripMenuItem,
+            this.aboutToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(872, 24);
+            this.menuStrip1.TabIndex = 16;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportLogToolStripMenuItem,
+            this.deleteLogToolStripMenuItem,
+            this.saveSettingsToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // exportLogToolStripMenuItem
+            // 
+            this.exportLogToolStripMenuItem.Name = "exportLogToolStripMenuItem";
+            this.exportLogToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.exportLogToolStripMenuItem.Text = "Export Log";
+            this.exportLogToolStripMenuItem.Click += new System.EventHandler(this.exportLogToolStripMenuItem_Click);
+            // 
+            // deleteLogToolStripMenuItem
+            // 
+            this.deleteLogToolStripMenuItem.Name = "deleteLogToolStripMenuItem";
+            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.deleteLogToolStripMenuItem.Text = "Delete Log";
+            this.deleteLogToolStripMenuItem.Click += new System.EventHandler(this.deleteLogToolStripMenuItem_Click);
+            // 
+            // saveSettingsToolStripMenuItem
+            // 
+            this.saveSettingsToolStripMenuItem.Name = "saveSettingsToolStripMenuItem";
+            this.saveSettingsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.saveSettingsToolStripMenuItem.Text = "Save Settings";
+            this.saveSettingsToolStripMenuItem.Click += new System.EventHandler(this.saveSettingsToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.minMaxToolStripMenuItem,
+            this.resetMiinMaxToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // minMaxToolStripMenuItem
+            // 
+            this.minMaxToolStripMenuItem.Name = "minMaxToolStripMenuItem";
+            this.minMaxToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.minMaxToolStripMenuItem.Text = "Min/Max";
+            this.minMaxToolStripMenuItem.Click += new System.EventHandler(this.minMaxToolStripMenuItem_Click);
+            // 
+            // resetMiinMaxToolStripMenuItem
+            // 
+            this.resetMiinMaxToolStripMenuItem.Name = "resetMiinMaxToolStripMenuItem";
+            this.resetMiinMaxToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.resetMiinMaxToolStripMenuItem.Text = "Reset Miin/Max";
+            this.resetMiinMaxToolStripMenuItem.Click += new System.EventHandler(this.resetMiinMaxToolStripMenuItem_Click);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.celciusToolStripMenuItem,
+            this.fehrenheitToolStripMenuItem});
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Options";
+            // 
+            // celciusToolStripMenuItem
+            // 
+            this.celciusToolStripMenuItem.CheckOnClick = true;
+            this.celciusToolStripMenuItem.Name = "celciusToolStripMenuItem";
+            this.celciusToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.celciusToolStripMenuItem.Text = "Celcius";
+            this.celciusToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.celciusToolStripMenuItem_CheckStateChanged);
+            // 
+            // fehrenheitToolStripMenuItem
+            // 
+            this.fehrenheitToolStripMenuItem.Checked = true;
+            this.fehrenheitToolStripMenuItem.CheckOnClick = true;
+            this.fehrenheitToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.fehrenheitToolStripMenuItem.Name = "fehrenheitToolStripMenuItem";
+            this.fehrenheitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fehrenheitToolStripMenuItem.Text = "Fahrenheit";
+            this.fehrenheitToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.fehrenheitToolStripMenuItem_CheckStateChanged);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem1});
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.aboutToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem1.Text = "About";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "csv";
+            this.saveFileDialog1.FileName = "HomeControlLog.csv";
             // 
             // TStat
             // 
@@ -871,7 +1000,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(872, 506);
+            this.ClientSize = new System.Drawing.Size(872, 526);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.UpdateLabel);
             this.Controls.Add(this.BarnGroup);
@@ -883,8 +1012,10 @@
             this.Controls.Add(this.HideButton);
             this.Controls.Add(this.ActCondGroup);
             this.Controls.Add(this.DesiredConditionsGp);
+            this.Controls.Add(this.menuStrip1);
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "TStat";
             this.Text = "Home Control";
@@ -907,6 +1038,8 @@
             this.BarnGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BarnDesMin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BarnDesMax)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -976,5 +1109,19 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label WindLabel;
         private System.Windows.Forms.CheckBox AutoHumidity;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportLogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteLogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem minMaxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ToolStripMenuItem resetMiinMaxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem celciusToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fehrenheitToolStripMenuItem;
     }
 }

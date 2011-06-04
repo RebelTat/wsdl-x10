@@ -71,7 +71,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>jim.ico</ApplicationIcon>
+    <ApplicationIcon>WSDL.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -86,6 +86,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox1.Designer.cs">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MinMaxForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MinMaxForm.Designer.cs">
+      <DependentUpon>MinMaxForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Moisture.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,6 +108,12 @@
       <DependentUpon>TStat.cs</DependentUpon>
     </Compile>
     <Compile Include="WxUnits.cs" />
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MinMaxForm.resx">
+      <DependentUpon>MinMaxForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -162,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="jim.ico" />
+    <Content Include="WSDL.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
