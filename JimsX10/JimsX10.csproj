@@ -24,11 +24,12 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <SupportUrl>http://jimroal.com</SupportUrl>
+    <SupportUrl>http://code.google.com/p/wsdl-x10/</SupportUrl>
+    <ErrorReportUrl>http://code.google.com/p/wsdl-x10/</ErrorReportUrl>
     <ProductName>Weather Station X10 Plugin</ProductName>
     <PublisherName>Weather</PublisherName>
     <SuiteName>Jims X10 Controls</SuiteName>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>8</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>

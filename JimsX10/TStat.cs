@@ -70,7 +70,7 @@ namespace JimsX10
         public WxUnits mWxDataUnits;
         public WxUnits mWxDisplayUnits;
         public double Rain24; // rain in the last 24 hours.  Used to control sprinkler override.
-        AboutBox1 about = new AboutBox1();
+        
 
         DateTime last_run = new DateTime(); // used for compressor timer
         int BarnSensorNum = 1; // assume the barn uses outside temp for now.  Sensor can be selected later.
@@ -130,6 +130,10 @@ namespace JimsX10
             wind = 0;
             mWxDisplayUnits.Temperature = TemperatureUnit.degF;
             mWxDisplayUnits.Wind = SpeedUnit.mi_per_hr;
+            for (int j = 0; j < lasttemp.Length; j++)
+            {
+                lasttemp[j] = DateTime.MinValue;
+            }
         }
 
         private void CoolingDesiredMax_changed(object sender, EventArgs e)
@@ -995,9 +999,13 @@ namespace JimsX10
                                 mWxDataUnits.Temperature, TemperatureUnit.degF), WxSpeedUnit.Convert(wnd, SpeedUnit.m_per_sec, SpeedUnit.mi_per_hr));
 
                     DateTime now = DateTime.UtcNow;
-                    TimeSpan sinceTemp = now - lasttemp[sd.Sensor];
-                    sensorName[sd.Sensor].BackColor = (sinceTemp > sensorTimeoutLimit) ? oldColor : okColor;
                     lasttemp[sd.Sensor] = now;
+                    for (int k = 0; k < sensorName.Length - 1; k++)
+                    {
+                        TimeSpan sinceTemp = now - lasttemp[k];
+                        sensorName[k].BackColor = (sinceTemp > sensorTimeoutLimit) ? oldColor : okColor;
+                    }
+ 
                     // store all the min/max data
                     if (sensorATnum[sd.Sensor] > tMinMax[sd.Sensor].ATMax) tMinMax[sd.Sensor].ATMax = sensorATnum[sd.Sensor];
                     if (sensorATnum[sd.Sensor] < tMinMax[sd.Sensor].ATMin) tMinMax[sd.Sensor].ATMin = sensorATnum[sd.Sensor];
@@ -1125,6 +1133,7 @@ namespace JimsX10
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            AboutBox1 about = new AboutBox1();
             about.Show();
         }
 
